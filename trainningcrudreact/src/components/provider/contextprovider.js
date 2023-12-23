@@ -4,9 +4,10 @@ import Categoryservice from "../services/categoryservice";
 import Statusservice from "../services/statusservice";
 import Brandservice from "../services/brandservice";
 import Productbrandservice from "../services/productbrandservice";
-import categoryservice from "../services/categoryservice";
-
+import productbrandservice from "../services/productbrandservice";
 const Context=createContext();
+
+
 const Provider=({children})=>{
 
     const [show, setShow] = useState(false);
@@ -17,6 +18,8 @@ const Provider=({children})=>{
     const [listStatus,setListStatus]=useState([])
     const [listBrand,setListBrand]=useState([])
     const [listProductBrand,setListProductBrand]=useState([])
+    const [totalPages,setTotalPage]=useState([]);
+
 
     //Set All Data
     useEffect( async () => {
@@ -24,6 +27,7 @@ const Provider=({children})=>{
         await showDataStatus();
         await showDataBrand();
         await showDataProductBrand();
+        await totalPage();
     }, []);
 
     const showDataSubCate= ()=>{
@@ -44,22 +48,109 @@ const Provider=({children})=>{
     }
 
     const showDataProductBrand=()=>{
-        return Productbrandservice.getAll().then((response)=>{
+        return Productbrandservice.pageGetAll(1).then((response)=>{
             setListProductBrand(response.data);
         })
     }
 
-    const showDataFind=(name,price,brandName,cateName,statusName)=>{
-        return Productbrandservice.findProductBrandByAll(name,price,brandName,cateName,statusName).then(res=>{
-            setListProductBrand(res.data);
+    //chuyển page
+    const setPage=(page,whatAction,dataSearch,pname,price,brandName,cateName,statusName)=>{
+        if(whatAction==='none'){
+            Productbrandservice.pageGetAll(page).then((response)=>{
+                setListProductBrand(response.data);
+            })
+        }else if(whatAction==='search'){
+            Productbrandservice.searchProductBrandByAll(dataSearch,page).then(res=>{
+                setListProductBrand(res.data.productBrandResponseList);
+            })
+        }else{
+            Productbrandservice.findProductBrandByAll(pname,price,brandName,cateName,statusName,page).then(res=>{
+                setListProductBrand(res.data.productBrandResponseList);
+            })
+        }
+    }
+
+    //find
+    const showDataFind=(name,price,brandName,cateName,statusName,page)=>{
+        return Productbrandservice.findProductBrandByAll(name,price,brandName,cateName,statusName,page).then(res=>{
+            setListProductBrand(res.data.productBrandResponseList);
+            const myArray=[];
+            for(let i=1;i<=res.data.totalResult;i++){
+                myArray.push(i)
+            }
+            setTotalPage(myArray)
         })
     }
 
-    const showDataSearch=(keyword)=>{
-        return Productbrandservice.searchProductBrandByAll(keyword).then(res=>{
-            setListProductBrand(res.data);
+    //search
+    const showDataSearch=(keyword,page)=>{
+        return Productbrandservice.searchProductBrandByAll(keyword,page).then(res=>{
+            setListProductBrand(res.data.productBrandResponseList);
+            const myArray=[];
+            for(let i=1;i<=res.data.totalResult;i++){
+                myArray.push(i)
+            }
+            setTotalPage(myArray)
         })
     }
+
+
+    const totalPage=()=>{
+        const myArray=[];
+        productbrandservice.totalPage().then(res=>{
+            for(let i=1;i<=res.data;i++){
+                myArray.push(i)
+            }
+            setTotalPage(myArray)
+        })
+    }
+
+
+    const updateDataAdd=(productBrand)=>{
+        setListProductBrand([productBrand,...listProductBrand])
+    }
+
+    const updateDataUpdate=(productBrand)=>{
+        for(let i=0;i<listProductBrand.length;i++){
+            if(productBrand.productId===listProductBrand[i].productId){
+                listProductBrand.splice(i,1,productBrand);
+            }
+        }
+    }
+
+    const updateDataDelete=(productBrand)=>{
+        for(let i=0;i<listProductBrand.length;i++){
+            if(productBrand.productId===listProductBrand[i].productId){
+                listProductBrand.splice(i,1);
+            }
+        }
+    }
+
+    const showToastMessage=(message)=>{
+        //toast content
+        let toastContent=document.createElement("div")
+        toastContent.classList.add('toast-body')
+        toastContent.innerHTML= `
+                            <i class="fa-solid fa-circle-check"></i>
+                            <span class="message">${message}</span>
+                            <span class="countdown"></span>`
+
+        //toast container
+        let toastContainer=document.getElementsByClassName('toast-container')[0]
+        toastContainer.appendChild(toastContent)
+        console.log(toastContainer);
+
+        setTimeout(()=>{
+            toastContent.style.animation='endd ease-in-out 1.5s forwards'
+        },3000)
+
+        setTimeout(()=>{
+            toastContent.remove()
+        },6000)
+    }
+
+
+
 
 
     const validate=(name,color,quantity,sellprice,originprice,error)=>{
@@ -125,7 +216,8 @@ const Provider=({children})=>{
 
 
     const value={
-        show,handleShow,handleClose,listSubCate,listStatus,listBrand,listProductBrand,showDataProductBrand,showDataFind,showDataSearch,validate
+        show,handleShow,handleClose,listSubCate,listStatus,listBrand,listProductBrand,totalPages,
+        showDataProductBrand,validate,showDataSearch,showToastMessage,updateDataAdd,updateDataUpdate,updateDataDelete,setPage,totalPage,showDataFind
     }
 
 

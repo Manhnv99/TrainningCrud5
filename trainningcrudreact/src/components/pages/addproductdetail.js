@@ -33,63 +33,14 @@ const AddProduct=(props)=>{
     }, []);
 
 
-    const handleChangeName=(e)=>{
-        setNameP(e.target.value)
-    }
-
-    const handleChangeColor=(e)=>{
-        setColorP(e.target.value)
-    }
-
-    const handleChangeQuantity=(e)=>{
-        setQuantityP(e.target.value)
-    }
-
-    const handleChangeSellPrice=(e)=>{
-        setSellPrice(e.target.value)
-    }
-
-    const handleChangeOriginPrice=(e)=>{
-        setOriginPrice(e.target.value)
-    }
-
-    const handleChangeBrandName=(e)=>{
-        setIdBrand(e.target.value)
-    }
-
-
-    const handleChangeSubCate=(e)=>{
-        setIdSubCate(e.target.value)
-    }
-
     const handleAddProduct=()=>{
-        setLoading(true)
-        setTimeout(async ()=>{
-            let error=document.querySelectorAll('.validate  span')
-            if(value.validate(nameP,colorP,quantityP,sellPrice,originPrice,error)===0){
+        let error=document.querySelectorAll('.validate  span')
+        if(value.validate(nameP,colorP,quantityP,sellPrice,originPrice,error)===0){
+            setLoading(true)
+            setTimeout(async ()=>{
                 //get brand object
-                let brand={};
-                let subCate={};
-                let status={};
-                let top1Product;
+                let currentProduct;
 
-
-                //get brand object
-                await brandservice.getBrandById(idBrand).then(res=>{
-                    brand=res.data;
-                });
-
-                //get subcate object
-                await categoryservice.getSubCateById(idSubCate).then(res=>{
-                    subCate=res.data;
-                });
-
-                //get status object to add into product
-                await statusservice.getStatusById(1).then(res=>{
-                    status=res.data;
-                })
-
-                //set product để add
                 let product= {
                     productName:nameP,
                     color:colorP,
@@ -97,33 +48,32 @@ const AddProduct=(props)=>{
                     sellPrice:sellPrice,
                     originPrice:originPrice,
                     description:'tốt',
-                    subCategory:subCate,
-                    status:status
+                    idSubcate:idSubCate,
+                    idStatus:1
                 }
 
                 //add Product
-                await productservice.addProduct(product);
-
-                //Lấy ra product vừa add
-                await productservice.getAll().then(res=>{
-                    top1Product=res.data.pop()
+                await productservice.addProduct(product).then(res=>{
+                    currentProduct=res.data;
                 });
 
-                //set productBrand để add
                 let productBrand={
-                    product:top1Product,
-                    brand:brand
+                    brandIdEdit:null,
+                    productId:currentProduct.id,
+                    brandId:idBrand
                 }
 
-                //add ProductBrand
-                await productbrandservice.addProductBrand(productBrand);
-
-
-                await  value.showDataProductBrand();
+                // add ProductBrand
+                await productbrandservice.addProductBrand(productBrand).then(res=>{
+                    // value.updateDataAdd(res.data)
+                    value.setPage(1)
+                    value.totalPage()
+                });
                 await value.handleClose();
-                setLoading(false)
-            }
-        },1500)
+                await setLoading(false)
+                await value.showToastMessage('Thêm Sản Phẩm Thành Công!')
+            },1500)
+        }
     }
 
 
@@ -137,52 +87,42 @@ const AddProduct=(props)=>{
                             <p>Name:</p>
                             <span></span>
                         </div>
-                        <input type={"text"} onChange={(e)=>{handleChangeName(e)}}/>
+                        <input type={"text"} onChange={(e)=>{setNameP(e.target.value)}}/>
                     </div>
                     <div className="col-12">
                         <div className="validate">
                             <p>Color:</p>
                             <span></span>
                         </div>
-                        <input type={"text"} onChange={(e) => {
-                            handleChangeColor(e)
-                        }}/>
+                        <input type={"text"} onChange={(e) => {setColorP(e.target.value)}}/>
                     </div>
                     <div className="col-12">
                         <div className="validate">
                             <p>Quantity:</p>
                             <span></span>
                         </div>
-                        <input type={"text"} onChange={(e) => {
-                            handleChangeQuantity(e)
-                        }}/>
+                        <input type={"text"} onChange={(e) => {setQuantityP(e.target.value)}}/>
                     </div>
                     <div className="col-12">
                         <div className="validate">
                             <p>Sell Price:</p>
                             <span></span>
                         </div>
-                        <input type={"text"} onChange={(e) => {
-                            handleChangeSellPrice(e)
-                        }}/>
+                        <input type={"text"} onChange={(e) => {setSellPrice(e.target.value)}}/>
                     </div>
                     <div className="col-12">
                         <div className="validate">
                             <p>Origin Price:</p>
                             <span></span>
                         </div>
-                        <input type={"text"} onChange={(e) => {
-                            handleChangeOriginPrice(e)
-                        }}/>
+                        <input type={"text"} onChange={(e) => {setOriginPrice(e.target.value)}}/>
                     </div>
                     <div className="col-12">
                         <div className="validate">
                             <p>Brand Name:</p>
                             <span></span>
                         </div>
-                        <select onChange={(e) => {
-                            handleChangeBrandName(e)
-                        }}>
+                        <select onChange={(e) => {setIdBrand(e.target.value)}}>
                             {value.listBrand.map(item => {
                                 return(
                                     <option key={item.id} value={item.id}>{item.brandName}</option>
@@ -195,9 +135,7 @@ const AddProduct=(props)=>{
                             <p>SubCateGory:</p>
                             <span></span>
                         </div>
-                        <select onChange={(e) => {
-                            handleChangeSubCate(e)
-                        }}>
+                        <select onChange={(e) => {setIdSubCate(e.target.value)}}>
                             {value.listSubCate.map(item => {
                                 return(
                                     <option key={item.id} value={item.id}>{item.subCateName}</option>

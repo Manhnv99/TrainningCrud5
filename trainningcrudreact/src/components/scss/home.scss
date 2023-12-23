@@ -124,12 +124,25 @@ body{
     justify-content: space-between;
     color: #444;
     .page{
-      color: #fff;
-      background-color: #5daa54;
+      color: #444;
       padding: 5px 10px;
       border-radius: 3px;
       margin: 0 10px;
       cursor: pointer;
+    }
+    .director{
+      cursor: pointer;
+      background-color: #5daa54;
+      padding: 5px 10px;
+      border-radius: 5px;
+      color: #fff;
+    }
+      .director:hover{
+        opacity: 0.8;
+        transition: ease-in-out 0.3s;
+      }
+    .active{
+      background-color: #5daa54;
     }
   }
 }
