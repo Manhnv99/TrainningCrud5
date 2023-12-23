@@ -1,18 +1,16 @@
 package com.example.trainingcrud.controller;
 
-import com.example.trainingcrud.model.ProductBrand;
-import com.example.trainingcrud.repository.ProductBrandRepository;
-import com.example.trainingcrud.response.ProductBrandResponse;
+import com.example.trainingcrud.request.ProductBrandRequest;
+import com.example.trainingcrud.response.SearchResultResponse;
+import com.example.trainingcrud.service.ProductBrandService;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+
 
 @CrossOrigin
 @RestController
@@ -20,34 +18,55 @@ import java.util.Optional;
 public class ProductBrandController {
 
     @Autowired
-    private ProductBrandRepository productBrandRepository;
+    private ProductBrandService productBrandService;
 
-    private List<ProductBrandResponse> productBrandResponseList=new ArrayList<>();
 
-    private List<ProductBrand> productBrandList=new ArrayList<>();
+    @PostMapping("/add")
+    public ResponseEntity<?> addProductBrand(@RequestBody @Valid ProductBrandRequest productBrandRequest){
+        return ResponseEntity.status(HttpStatus.OK).body(productBrandService.add(productBrandRequest));
+    }
 
-    private ProductBrand productBrand=new ProductBrand();
-
-    private ProductBrandResponse productBrandResponse=new ProductBrandResponse();
 
     @GetMapping("/list")
     public ResponseEntity<?> getAll(){
-        productBrandResponseList=productBrandRepository.getAll();
-        return ResponseEntity.status(HttpStatus.OK).body(productBrandResponseList);
+        return ResponseEntity.status(HttpStatus.OK).body(productBrandService.getAll());
+    }
+
+    @GetMapping("/search")
+    public ResponseEntity<?> searchByAll(@RequestParam(name = "keyword",required = false,defaultValue = "") String query,@RequestParam(name = "page",required = false,defaultValue = "") Integer page){
+        PageRequest pageRequest=PageRequest.of(page-1,4);
+        SearchResultResponse searchResultResponse=new SearchResultResponse();
+        searchResultResponse.setProductBrandResponseList(productBrandService.searchByAll(query,pageRequest));
+        searchResultResponse.setTotalResult(productBrandService.searchGetTotalResult(query));
+        return ResponseEntity.status(HttpStatus.OK).body(searchResultResponse);
     }
 
 
-    @GetMapping("/list/{id}")
-    public ResponseEntity<?> getAll(@PathVariable Long id){
-        productBrandResponse=productBrandRepository.getProductBrandById(id);
-        return ResponseEntity.status(HttpStatus.OK).body(productBrandResponse);
+    @DeleteMapping("/remove")
+    public ResponseEntity<?> removeById(@RequestBody @Valid ProductBrandRequest productBrandRequest){
+        return ResponseEntity.status(HttpStatus.OK).body(productBrandService.removeById(productBrandRequest));
     }
 
-    @PostMapping("/add")
-    public ResponseEntity<?> addProductBrand(@RequestBody ProductBrand productBrandAdd){
-        productBrand=productBrandRepository.save(productBrandAdd);
-        return ResponseEntity.status(HttpStatus.OK).body(productBrand);
+
+    @PutMapping("/update")
+    public ResponseEntity<?> update(@RequestBody @Valid ProductBrandRequest productBrandRequest){
+        return ResponseEntity.status(HttpStatus.OK).body(productBrandService.update(productBrandRequest.getBrandIdEdit(),productBrandRequest.getProductId(),productBrandRequest.getBrandId()));
     }
+
+    @GetMapping("/list/pages")
+    public ResponseEntity<?> pageGetAll(@RequestParam(name = "page") Integer page){
+        PageRequest pageRequest=PageRequest.of(page-1,4, Sort.by(Sort.Direction.DESC,"productId"));
+        return ResponseEntity.status(HttpStatus.OK).body(productBrandService.pageGetAll(pageRequest));
+    }
+
+
+    @GetMapping("/totalPage")
+    public Double totalPage(){
+        return productBrandService.totalPage();
+    }
+
+
+
 
 
     @GetMapping("/find")
@@ -56,39 +75,14 @@ public class ProductBrandController {
             @RequestParam (name = "price",required = false) Double price,
             @RequestParam (name = "brandname",required = false) String brandName,
             @RequestParam (name = "catename",required = false) String cateName,
-            @RequestParam (name = "statusname",required = false) String statusName
+            @RequestParam (name = "statusname",required = false) String statusName,
+            @RequestParam(name = "page",required = false,defaultValue = "") Integer page
     ){
-        productBrandResponseList=productBrandRepository.findByAll(pname,price ,brandName,cateName,statusName);
-        return ResponseEntity.status(HttpStatus.OK).body(productBrandResponseList);
+        PageRequest pageRequest=PageRequest.of(page-1,4);
+        SearchResultResponse searchResultResponse=new SearchResultResponse();
+        searchResultResponse.setProductBrandResponseList(productBrandService.findByAll(pname,price,brandName,cateName,statusName,pageRequest));
+        searchResultResponse.setTotalResult(productBrandService.findGetTotalResult(pname,price,brandName,cateName,statusName));
+        return ResponseEntity.status(HttpStatus.OK).body(searchResultResponse);
     }
-
-
-    @GetMapping("/search")
-    public ResponseEntity<?> searchByAll(@RequestParam(name = "keyword",required = false,defaultValue = "") String query){
-        productBrandResponseList=productBrandRepository.searchByAll(query);
-        return ResponseEntity.status(HttpStatus.OK).body(productBrandResponseList);
-    }
-
-    @DeleteMapping("/remove/{id}")
-    public ResponseEntity<?> remove(@PathVariable Long id){
-        productBrandRepository.deleteById(id);
-        return ResponseEntity.status(HttpStatus.OK).body(true);
-    }
-
-    @GetMapping("/listProductBrand/{id}")
-    public ResponseEntity<?> list(@PathVariable Long id){
-        Optional productBrand=productBrandRepository.findById(id);
-        return ResponseEntity.status(HttpStatus.OK).body(productBrand);
-    }
-
-    @PutMapping("/update/{id}")
-    public ResponseEntity<?> update(@PathVariable Long id,@RequestBody ProductBrand productBrandEdit){
-        ProductBrand productBrand=productBrandRepository.getReferenceById(id);
-        productBrand.setBrand(productBrandEdit.getBrand());
-        productBrand.setProduct(productBrandEdit.getProduct());
-        ProductBrand pb=productBrandRepository.save(productBrand);
-        return ResponseEntity.status(HttpStatus.OK).body(pb);
-    }
-
 
 }

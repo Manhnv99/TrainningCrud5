@@ -2,29 +2,30 @@ package com.example.trainingcrud.model;
 
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 @AllArgsConstructor
 @NoArgsConstructor
+@Data
 @Getter
 @Setter
 @Entity
 @Table(name = "product_brand")
 public class ProductBrand {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id")
-    private Long id;
+    @EmbeddedId
+    private ProductBrandKey id;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name="product_id", referencedColumnName = "id")
+    @ManyToOne
+    @MapsId("productId")
+    @JoinColumn(name="product_id")
     private Product product;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name="brand_id", referencedColumnName = "id")
+    @ManyToOne
+    @MapsId("brandId")
+    @JoinColumn(name="brand_id")
     private Brand brand;
+
+
+
 }

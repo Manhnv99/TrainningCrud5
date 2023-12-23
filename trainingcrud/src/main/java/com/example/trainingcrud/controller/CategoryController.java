@@ -1,8 +1,6 @@
 package com.example.trainingcrud.controller;
 
-
-import com.example.trainingcrud.model.Category;
-import com.example.trainingcrud.repository.CategoryRepository;
+import com.example.trainingcrud.service.CategoryService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -11,8 +9,6 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.ArrayList;
-import java.util.List;
 
 @CrossOrigin
 @RestController
@@ -20,13 +16,10 @@ import java.util.List;
 public class CategoryController {
 
     @Autowired
-    private CategoryRepository categoryRepository;
-
-    private List<Category> listCategory=new ArrayList<>();
+    private CategoryService categoryService;
 
     @GetMapping("/listCate")
     public ResponseEntity<?> getAll(){
-        listCategory=categoryRepository.findAll();
-        return ResponseEntity.status(HttpStatus.OK).body(listCategory);
+        return ResponseEntity.status(HttpStatus.OK).body(categoryService.getAll());
     }
 }

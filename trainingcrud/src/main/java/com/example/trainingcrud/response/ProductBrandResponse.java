@@ -1,27 +1,49 @@
 package com.example.trainingcrud.response;
 
-import lombok.AllArgsConstructor;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 @AllArgsConstructor
 @NoArgsConstructor
+@Getter
+@Setter
+@ToString
 public class ProductBrandResponse {
-    private Long id;
+
+    private Long productId;
+
+    private Long brandId;
+
     private String name;
+
     private String color;
+
     private Long quantity;
+
     private Double sellPrice;
+
     private Double originPrice;
+
     private String brandName;
+
     private String subCategory;
+
     private String pStatus;
 
-    public Long getId() {
-        return id;
+
+    public Long getProductId() {
+        return productId;
     }
 
-    public void setId(Long id) {
-        this.id = id;
+    public void setProductId(Long productId) {
+        this.productId = productId;
+    }
+
+    public Long getBrandId() {
+        return brandId;
+    }
+
+    public void setBrandId(Long brandId) {
+        this.brandId = brandId;
     }
 
     public String getName() {
@@ -87,4 +109,5 @@ public class ProductBrandResponse {
     public void setpStatus(String pStatus) {
         this.pStatus = pStatus;
     }
+
 }

@@ -4,7 +4,10 @@ package com.example.trainingcrud.controller;
 import com.example.trainingcrud.model.Brand;
 import com.example.trainingcrud.model.Product;
 import com.example.trainingcrud.repository.ProductRepository;
+import com.example.trainingcrud.request.ProductRequest;
+import com.example.trainingcrud.service.ProductService;
 import jakarta.persistence.Query;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -19,51 +22,33 @@ import java.util.List;
 public class ProductController {
 
     @Autowired
-    private ProductRepository productRepository;
-
-    private Product product=new Product();
-
-    private List<Product> productList=new ArrayList<>();
+    private ProductService productService;
 
 
     @PostMapping("/add")
-    public ResponseEntity<?> addProduct(@RequestBody Product productAdd){
-        product=productRepository.save(productAdd);
-        return ResponseEntity.status(HttpStatus.OK).body(product);
+    public ResponseEntity<?> addProduct(@RequestBody @Valid ProductRequest productRequest){
+        return ResponseEntity.status(HttpStatus.CREATED).body(productService.add(productRequest));
     }
 
     @GetMapping("/listProduct")
     public ResponseEntity<?> getAll(){
-        productList=productRepository.findAll();
-        return ResponseEntity.status(HttpStatus.OK).body(productList);
+        return ResponseEntity.status(HttpStatus.OK).body(productService.getAll());
     }
 
     @DeleteMapping("/remove/{id}")
     public ResponseEntity<?> remove(@PathVariable Long id){
-        productRepository.deleteById(id);
-        return ResponseEntity.status(HttpStatus.OK).body(true);
+        return ResponseEntity.status(HttpStatus.OK).body(productService.deleteById(id));
     }
 
     @PutMapping("/updateProduct/{id}")
-    public ResponseEntity<?> update(@PathVariable Long id,@RequestBody Product productEdit){
-        Product product=productRepository.getReferenceById(id);
-        product.setProductName(productEdit.getProductName());
-        product.setColor(productEdit.getColor());
-        product.setQuantity(productEdit.getQuantity());
-        product.setSellPrice(productEdit.getSellPrice());
-        product.setOriginPrice(productEdit.getOriginPrice());
-        product.setDescription(productEdit.getDescription());
-        product.setSubCategory(productEdit.getSubCategory());
-        product.setStatus(productEdit.getStatus());
-        Product p=productRepository.save(product);
-        return ResponseEntity.status(HttpStatus.OK).body(p);
+    public ResponseEntity<?> update(@PathVariable Long id,@RequestBody @Valid ProductRequest productRequest){
+        return ResponseEntity.status(HttpStatus.OK).body(productService.updateProduct(id,productRequest));
     }
 
 
     @GetMapping("/list/{id}")
     public ResponseEntity<?> getProductById(@PathVariable Long id){
-        product=productRepository.getReferenceById(id);
-        return ResponseEntity.status(HttpStatus.OK).body(product);
+        return ResponseEntity.status(HttpStatus.OK).body(productService.getById(id));
     }
 
 
