@@ -8,6 +8,7 @@ import Updateproductdetail from "./updateproductdetail";
 import productbrandservice from "../services/productbrandservice";
 import productservice from "../services/productservice";
 import Loading from "./loading";
+import debounce from 'lodash.debounce'
 
 
 const Home=()=>{
@@ -71,7 +72,7 @@ const Home=()=>{
         active[page-1].className='page active'
     }
 
-    const handleSearch=async (e)=>{
+    const handleSearch= async  (e)=>{
         await value.showDataSearch(e.target.value,1);
         await setDataSearch(e.target.value)
         await setWhatAction('search')

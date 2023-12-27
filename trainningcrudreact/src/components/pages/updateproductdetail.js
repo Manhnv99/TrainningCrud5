@@ -21,8 +21,7 @@ const Updateproductdetail=(props)=>{
     const [loading,setLoading]=useState(false)
     const [idProduct,setIdProduct]=useState(props.idProduct)
     const [idBrand,setIdBrand]=useState(props.idBrand)
-
-
+    let error=document.querySelectorAll('.validate  span');
 
 
     useEffect(() => {
@@ -74,8 +73,27 @@ const Updateproductdetail=(props)=>{
         UpdateDetailProduct(idProductBrand);
     }
 
+    const handleNameOnBlur=()=>{
+        value.handleNameOnBlur(nameP,error)
+    }
+
+    const handleColorOnBlur=()=>{
+        value.handleColorOnBlur(colorP,error)
+    }
+
+    const handleQuantityOnBlur=()=>{
+        value.handleQuantityOnBlur(quantityP,error)
+    }
+
+    const handleSellOnBlur=()=>{
+        value.handleSellOnBlur(sellPrice,error)
+    }
+
+    const handleOriginOnBlur=()=>{
+        value.handleOriginOnBlur(originPrice,error)
+    }
+
     const UpdateDetailProduct= (id)=>{
-        let error=document.querySelectorAll('.validate  span');
         if(value.validate(nameP,colorP,quantityP,sellPrice,originPrice,error)===0){
             setLoading(true)
             setTimeout(async ()=>{
@@ -123,35 +141,35 @@ const Updateproductdetail=(props)=>{
                             <p>Name:</p>
                             <span></span>
                         </div>
-                        <input type={"text"} value={nameP} onChange={(e) => {setNameP(e.target.value)}} />
+                        <input type={"text"} value={nameP} onChange={(e) => {setNameP(e.target.value)}} onBlur={handleNameOnBlur}/>
                     </div>
                     <div className="col-12">
                         <div className="validate">
                             <p>Color:</p>
                             <span></span>
                         </div>
-                        <input type={"text"} value={colorP} onChange={(e) => {setColorP(e.target.value)}}/>
+                        <input type={"text"} value={colorP} onChange={(e) => {setColorP(e.target.value)}} onBlur={handleColorOnBlur}/>
                     </div>
                     <div className="col-12">
                         <div className="validate">
                             <p>Quantity:</p>
                             <span></span>
                         </div>
-                        <input type={"text"} value={quantityP} onChange={(e) => {setQuantityP(e.target.value)}}/>
+                        <input type={"text"} value={quantityP} onChange={(e) => {setQuantityP(e.target.value)}} onBlur={handleQuantityOnBlur}/>
                     </div>
                     <div className="col-12">
                         <div className="validate">
                             <p>Sell Price:</p>
                             <span></span>
                         </div>
-                        <input type={"text"} value={sellPrice} onChange={(e) => {setSellPrice(e.target.value)}}/>
+                        <input type={"text"} value={sellPrice} onChange={(e) => {setSellPrice(e.target.value)}} onBlur={handleSellOnBlur}/>
                     </div>
                     <div className="col-12">
                         <div className="validate">
                             <p>Origin Price:</p>
                             <span></span>
                         </div>
-                        <input type={"text"} value={originPrice} onChange={(e) => {setOriginPrice(e.target.value)}}/>
+                        <input type={"text"} value={originPrice} onChange={(e) => {setOriginPrice(e.target.value)}} onBlur={handleOriginOnBlur}/>
                     </div>
                     <div className="col-12">
                         <div className="validate">

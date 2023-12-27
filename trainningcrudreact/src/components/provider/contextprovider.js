@@ -150,6 +150,53 @@ const Provider=({children})=>{
     }
 
 
+    const handleNameOnBlur=(input,error)=>{
+        if(input===''){
+            error[0].style.display='block'
+            error[0].innerHTML='Bạn Chưa Điền Tên Sản Phẩm!'
+        }else{
+            error[0].style.display='none'
+            error[0].innerHTML=''
+        }
+    }
+    const handleColorOnBlur=(input,error)=>{
+        if(input===''){
+            error[1].style.display='block'
+            error[1].innerHTML='Bạn Chưa Điền Màu Sắc!'
+        }else{
+            error[1].style.display='none'
+            error[1].innerHTML=''
+        }
+    }
+    const handleQuantityOnBlur=(input,error)=>{
+        if(input===''){
+            error[2].style.display='block'
+            error[2].innerHTML='Bạn Chưa Điền Số Lượng!'
+        }else{
+            error[2].style.display='none'
+            error[2].innerHTML=''
+        }
+    }
+    const handleSellOnBlur=(input,error)=>{
+        if(input===''){
+            error[3].style.display='block'
+            error[3].innerHTML='Bạn Chưa Điền Giá Bán!'
+        }else{
+            error[3].style.display='none'
+            error[3].innerHTML=''
+        }
+    }
+
+    const handleOriginOnBlur=(input,error)=>{
+        if(input===''){
+            error[4].style.display='block'
+            error[4].innerHTML='Bạn Chưa Điền Giá Gốc!'
+        }else{
+            error[4].style.display='none'
+            error[4].innerHTML=''
+        }
+    }
+
 
 
 
@@ -217,7 +264,8 @@ const Provider=({children})=>{
 
     const value={
         show,handleShow,handleClose,listSubCate,listStatus,listBrand,listProductBrand,totalPages,
-        showDataProductBrand,validate,showDataSearch,showToastMessage,updateDataAdd,updateDataUpdate,updateDataDelete,setPage,totalPage,showDataFind
+        showDataProductBrand,validate,showDataSearch,showToastMessage,updateDataAdd,updateDataUpdate,updateDataDelete,setPage,totalPage,showDataFind,handleNameOnBlur,
+        handleColorOnBlur,handleQuantityOnBlur,handleSellOnBlur,handleOriginOnBlur
     }
 
 
